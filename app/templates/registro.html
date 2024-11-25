@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gray-200 mt-6">
+    <div class="w-full max-w-lg p-8 bg-white shadow-xl rounded-xl border border-gray-300 mb-20">
+        <h1 class="text-3xl font-bold mb-6 text-center text-blue-900">Regístrate</h1>
+
+        <form action="/registro/" method="POST" class="space-y-4">
+            {% csrf_token %}
+            <!-- Display error message if exists -->
+            {% if error %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong class="font-bold">Error:</strong>
+                <span class="block sm:inline">{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <!-- Form fields with Tailwind CSS styling -->
+            <div class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Usuario</label>
+                    <input type="text" name="username" id="username"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 px-3 py-2">
+                </div>
+                <div>
+                    <label for="password1" class="block text-sm font-medium text-gray-700">Contraseña</label>
+                    <input type="password" name="password1" id="password1"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 px-3 py-2">
+                </div>
+                <div>
+                    <label for="password2" class="block text-sm font-medium text-gray-700">Confirmar Contraseña</label>
+                    <input type="password" name="password2" id="password2"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 px-3 py-2">
+                </div>
+            </div>
+
+            <button type="submit"
+                class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                Regístrate
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

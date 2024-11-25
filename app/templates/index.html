@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Contenedor para el nombre del horario y el botón de eliminar en la misma línea -->
+<div class="flex justify-between items-center mb-6 mt-6">
+    <h1 class="text-2xl font-bold">{{ horario.nombre }}</h1>
+
+    <!-- Botón para eliminar el horario -->
+    <form action="{% url 'eliminar_horario' horario.id %}" method="POST">
+        {% csrf_token %}
+        <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Eliminar Horario</button>
+    </form>
+</div>
+
+<!-- Contenedor de las tablas, con estilo de grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+    <!-- Iterar sobre las semanas y crear una tabla por semana -->
+    {% for semana in semanas %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+            <!-- Nombre de la semana como título de la tabla -->
+            <thead>
+                <tr class="bg-blue-500 text-white">
+                    <th colspan="5" class="py-2">{{ semana.nombre }}</th>
+                </tr>
+                <tr class="bg-gray-100 text-gray-600">
+                    <th class="py-2 px-4 border">Lun</th>
+                    <th class="py-2 px-4 border">Mar</th>
+                    <th class="py-2 px-4 border">Mié</th>
+                    <th class="py-2 px-4 border">Jue</th>
+                    <th class="py-2 px-4 border">Vie</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <!-- Iterar sobre los días de la semana -->
+                    {% for dia in semana.dia_set.all %}
+                    <td class="py-2 px-4 border">
+                        <!-- Iterar sobre las actividades del día y mostrar la abreviatura de la asignatura -->
+                        {% for actividad in dia.actividad_set.all %}
+                        <div class="text-center font-semibold">{{ actividad.asignatura.abreviatura }}</div>
+                        {% empty %}
+                        <div class="text-center text-gray-400">Libre</div>
+                        {% endfor %}
+                    </td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+
+</div>
+
+<!-- Mostrar lista de asignaturas y sus abreviaturas con diseño compacto -->
+<div class="my-8">
+    <h2 class="text-xl font-semibold mb-4">Asignaturas</h2>
+    <div class="bg-white border border-gray-300 rounded-lg shadow-md p-4 inline-block">
+        <ul class="list-none p-0">
+            {% for asignatura in asignaturas %}
+            <li class="flex items-center justify-between py-1">
+                <span class="flex items-center">
+                    <span class="w-2.5 h-2.5 inline-block mr-2 bg-black rounded-full"></span>
+                    {{ asignatura.abreviatura }}
+                </span>
+                <span class="text-gray-600 ml-4">{{ asignatura.nombre }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+<!-- Mostrar tabla de balance de carga -->
+<div class="my-8">
+    <h2 class="text-xl font-semibold mb-4">Balance de Carga</h2>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+            <thead>
+                <tr class="bg-gray-100 text-gray-600">
+                    <th class="py-2 px-4 border">Semana</th>
+                    {% for asignatura in asignaturas %}
+                    <th class="py-2 px-4 border">{{ asignatura.abreviatura }}</th>
+                    {% endfor %}
+                    <th class="py-2 px-4 border">Totales</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Iterar sobre el balance de carga por semana -->
+                {% for semana_balance, total in balance_combinado %}
+                <tr>
+                    <!-- Mostrar el número de la semana en la primera columna -->
+                    <td class="py-2 px-4 border">S{{ forloop.counter }}</td>
+                    <!-- Mostrar la carga de cada asignatura en la semana actual -->
+                    {% for carga in semana_balance %}
+                    <td class="py-2 px-4 border text-center">{{ carga }}</td>
+                    {% endfor %}
+                    <td class="py-2 px-4 border text-center">{{ total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

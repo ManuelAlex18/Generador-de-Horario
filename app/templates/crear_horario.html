@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex flex-col justify-center items-center min-h-screen bg-gray-200 py-12">
+    <div class="w-full max-w-4xl flex justify-end mb-6">
+        <!-- Botón Crear Periodo -->
+        <a href="/crear_periodo" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out mr-4
+               {% if pagina_activa == 'crear_periodo' %}bg-green-600{% endif %}">
+            Crear Periodo
+        </a>
+
+        <!-- Botón Añadir Asignatura -->
+        <a href="/crear_asignatura" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out
+               {% if pagina_activa == 'crear_asignatura' %}bg-yellow-600{% endif %}">
+            Añadir Asignatura
+        </a>
+    </div>
+
+
+    <form id="scheduleForm" action="/crear_horario/" method="POST"
+        class="bg-blue-100 shadow-2xl rounded-3xl px-16 pt-12 pb-12 mb-8 w-full max-w-4xl border border-gray-200">
+        {% csrf_token %}
+
+        <h2 class="text-4xl font-extrabold mb-12 text-center text-blue-600">Crear Horario</h2>
+        <!-- Mensajes de error -->
+        {% if form.non_field_errors %}
+        <div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded relative mb-6">
+            <strong class="font-bold">Error:</strong>
+            <ul class="list-disc ml-5 mt-2">
+                {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        <!-- Campo Nombre -->
+        <div class="mb-10">
+            <label for="nombre" class="block text-gray-700 text-lg font-semibold mb-3">
+                Nombre del Horario
+            </label>
+            {{ form.nombre }}
+            {% if form.nombre.errors %}
+            <div class="text-red-600 mt-2">
+                {% for error in form.nombre.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Campo Periodo -->
+        <div class="mb-10">
+            <label for="periodo" class="block text-gray-700 text-lg font-semibold mb-3">
+                Periodo
+            </label>
+            {{ form.periodo }}
+            {% if form.periodo.errors %}
+            <div class="text-red-600 mt-2">
+                {% for error in form.periodo.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Asignaturas con custom checkbox -->
+        <div class="mb-12">
+            <label class="block text-gray-700 text-lg font-semibold mb-3">
+                Asignaturas
+            </label>
+            {{ form.asignaturas }}
+            {% if form.asignaturas.errors %}
+            <div class="text-red-600 mt-2">
+                {% for error in form.asignaturas.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Spinner de carga (oculto por defecto) -->
+        <div id="spinner" class="hidden flex justify-center items-center mb-6">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+            <span class="ml-4 text-blue-700 font-semibold">Generando horario...</span>
+        </div>
+
+        <!-- Botón de envío -->
+        <div class="flex justify-center">
+            <button id="submitBtn" type="submit"
+                class="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-bold py-3 px-10 rounded-xl shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-400 transition duration-300 ease-in-out">
+                Crear Horario
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Al hacer clic en el botón de enviar
+    document.getElementById('scheduleForm').addEventListener('submit', function () {
+        // Mostrar el spinner de carga
+        document.getElementById('spinner').classList.remove('hidden');
+
+        // Deshabilitar el botón para evitar múltiples envíos
+        document.getElementById('submitBtn').disabled = true;
+    });
+</script>
+{% endblock %}

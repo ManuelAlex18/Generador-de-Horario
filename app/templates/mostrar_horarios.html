@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Contenedor del título y los botones en la misma línea -->
+    <div class="flex flex-col justify-between items-center mb-14 sm:flex-row">
+        <!-- Título alineado a la izquierda con mayor tamaño de fuente -->
+        <h1 class="text-4xl font-bold text-blue-900 mb-6">Horarios Creados:</h1>
+
+        <!-- Botones alineados a la derecha -->
+        <div class="flex space-x-4">
+            <!-- Botón Crear Horario -->
+            <a href="/crear_horario" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out
+               {% if pagina_activa == 'crear_horario' %}bg-blue-600{% endif %}">
+                Crear Horario
+            </a>
+
+            <!-- Botón Crear Periodo -->
+            <a href="/crear_periodo" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out
+               {% if pagina_activa == 'crear_periodo' %}bg-green-600{% endif %}">
+                Crear Periodo
+            </a>
+
+            <!-- Botón Añadir Asignatura -->
+            <a href="/crear_asignatura" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out
+               {% if pagina_activa == 'crear_asignatura' %}bg-yellow-600{% endif %}">
+                Añadir Asignatura
+            </a>
+        </div>
+    </div>
+
+    <!-- Lista de horarios con más espacio superior -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-8">
+        {% for horario in horarios %}
+        <div
+            class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out flex hover:bg-gray-100">
+            <!-- Contenido del horario -->
+            <a href="{% url 'index' horario.id %}" class="block p-6 flex-1">
+                <h2 class="text-xl font-semibold text-gray-900">{{ horario.nombre }}</h2>
+            </a>
+
+            <!-- Botón de eliminar -->
+            <form action="{% url 'eliminar_horario' horario.id %}" method="POST" class="flex">
+                {% csrf_token %}
+                <button type="submit"
+                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-r-lg flex items-center justify-center">
+                    Eliminar
+                </button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex flex-col justify-center items-center min-h-screen bg-gray-200 py-12">
+    
+    {% if form.non_field_errors %}
+    <div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded relative mb-6 w-full max-w-4xl">
+        <strong class="font-bold">Error:</strong>
+        <ul class="list-disc ml-5 mt-2">
+            {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    <form id="periodForm" action="{% url 'editar_periodo' periodo.id %}" method="POST"
+        class="bg-green-100 shadow-2xl rounded-3xl px-16 pt-12 pb-12 mb-8 w-full max-w-4xl border border-gray-200">
+        {% csrf_token %}
+    
+        <h2 class="text-4xl font-extrabold mb-12 text-center text-blue-600">Editar Periodo</h2>
+    
+        <!-- Mostrar error si existe -->
+        {% if error %}
+        <div class="text-red-600 mb-4">
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+    
+        <!-- Campo Nombre -->
+        <div class="mb-10">
+            <label for="name" class="block text-gray-700 text-lg font-semibold mb-3">
+                Nombre del Periodo
+            </label>
+            {{ form.name }}
+            {% if form.name.errors %}
+            <div class="text-red-600 mt-2">
+                {% for error in form.name.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    
+        <!-- Campo Fecha de Inicio -->
+        <div class="mb-10">
+            <label for="start" class="block text-gray-700 text-lg font-semibold mb-3">
+                Fecha de Inicio
+            </label>
+            {{ form.start }}
+            {% if form.start.errors %}
+            <div class="text-red-600 mt-2">
+                {% for error in form.start.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    
+        <!-- Campo Fecha de Fin -->
+        <div class="mb-10">
+            <label for="end" class="block text-gray-700 text-lg font-semibold mb-3">
+                Fecha de Fin
+            </label>
+            {{ form.end }}
+            {% if form.end.errors %}
+            <div class="text-red-600 mt-2">
+                {% for error in form.end.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    
+        <!-- Input para seleccionar días sin clase -->
+        <div class="mb-10">
+            <label for="dias_sin_clase_picker" class="block text-gray-700 text-lg font-semibold mb-3">
+                Seleccionar días sin clase
+            </label>
+            <input type="text" id="dias_sin_clase_picker" placeholder="Seleccionar días"
+                class="appearance-none border border-black rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-6">
+            <input type="hidden" id="id_dias_sin_clase" name="dias_sin_clase">
+        </div>
+    
+        <!-- Input para seleccionar semanas sin clase -->
+        <div class="mb-10">
+            <label for="semanas_sin_clase_picker" class="block text-gray-700 text-lg font-semibold mb-3">
+                Seleccionar semanas sin clase
+            </label>
+            <input type="text" id="semanas_sin_clase_picker" placeholder="Seleccionar semanas"
+                class="appearance-none border border-black rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-6">
+            <input type="hidden" id="id_semanas_sin_clase" name="semanas_sin_clase">
+        </div>
+    
+        <!-- Botón de envío -->
+        <!-- Botones de acción -->
+        <div class="flex justify-center space-x-4">
+            <button type="submit"
+                class="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-bold py-3 px-10 rounded-xl shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-400 transition duration-300 ease-in-out">
+                Guardar cambios
+            </button>
+            <form action="{% url 'eliminar_periodo' periodo.id %}" method="POST">
+                {% csrf_token %}
+                <button type="submit"
+                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-10 rounded-xl shadow-xl focus:outline-none focus:ring-4 focus:ring-red-400 transition duration-300 ease-in-out">
+                    Eliminar
+                </button>
+            </form>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Convertir las variables de Django a formato JSON en JavaScript
+
+    // Si las variables son vacías, asignar un array vacío
+    const diasSinClaseExistentes = JSON.parse('{{ dias_sin_clase|escapejs }}' || '[]');
+    const semanasSinClaseExistentes = JSON.parse('{{ semanas_sin_clase|escapejs }}' || '[]');
+
+    // Cargar los días sin clase existentes
+    flatpickr("#dias_sin_clase_picker", {
+        mode: "multiple",
+        dateFormat: "Y-m-d",
+        defaultDate: diasSinClaseExistentes,  // Cargar los días existentes
+        onChange: function (selectedDates, dateStr, instance) {
+            const dias_sin_clase = selectedDates.map(date => instance.formatDate(date, "Y-m-d"));
+            document.getElementById('id_dias_sin_clase').value = JSON.stringify(dias_sin_clase);
+        }
+    });
+
+    // Cargar las semanas sin clase existentes
+    flatpickr("#semanas_sin_clase_picker", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        defaultDate: semanasSinClaseExistentes.length ? [semanasSinClaseExistentes[0].start, semanasSinClaseExistentes[0].end] : [],
+        onChange: function (selectedDates, dateStr, instance) {
+            if (selectedDates.length === 2) {
+                const semana_sin_clase = {
+                    start: instance.formatDate(selectedDates[0], "Y-m-d"),
+                    end: instance.formatDate(selectedDates[1], "Y-m-d")
+                };
+                document.getElementById('id_semanas_sin_clase').value = JSON.stringify([semana_sin_clase]);
+            }
+        }
+    });
+</script>
+
+{% endblock %}

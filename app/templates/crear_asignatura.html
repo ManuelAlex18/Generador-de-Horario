@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex flex-col justify-center items-center min-h-screen bg-gray-200 py-12">
+    <div class="w-full max-w-4xl flex justify-end mb-6">
+        <!-- Botón Crear Periodo -->
+        <a href="/crear_horario" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out mr-4">
+            Crear Horario
+        </a>
+
+        <!-- Botón Añadir Asignatura -->
+        <a href="/crear_periodo" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out">
+            Crear Periodo
+        </a>
+    </div>
+    {% if form.non_field_errors %}
+    <div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded relative mb-6 w-full max-w-4xl">
+        <strong class="font-bold">Error:</strong>
+        <ul class="list-disc ml-5 mt-2">
+            {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <form id="asignaturaForm" action="/crear_asignatura/" method="POST"
+        class="bg-yellow-100 shadow-2xl rounded-3xl px-16 pt-12 pb-12 mb-8 w-full max-w-4xl border border-gray-200">
+        {% csrf_token %}
+
+        <h2 class="text-4xl font-extrabold mb-12 text-center text-blue-600">Añadir Asignatura</h2>
+
+        <!-- Campo Nombre -->
+        <div class="mb-10">
+            <label for="nombre" class="block text-gray-700 text-lg font-semibold mb-3">
+                Nombre de la Asignatura
+            </label>
+            {{ form.nombre }}
+
+            {% if form.nombre.errors %}
+            <div class="text-red-600 mt-2">
+                {% for error in form.nombre.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Campo Abreviatura -->
+        <div class="mb-10">
+            <label for="abreviatura" class="block text-gray-700 text-lg font-semibold mb-3">
+                Abreviatura
+            </label>
+            {{ form.abreviatura }}
+        </div>
+
+        <!-- Campo Horas de Clase -->
+        <div class="mb-10">
+            <label for="horas_clase" class="block text-gray-700 text-lg font-semibold mb-3">
+                Horas de Clase
+            </label>
+            {{ form.horas_clase }}
+        </div>
+
+        <!-- Botón de envío -->
+        <div class="flex justify-center">
+            <button id="submitBtn" type="submit"
+                class="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-bold py-3 px-10 rounded-xl shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-400 transition duration-300 ease-in-out">
+                Añadir Asignatura
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
